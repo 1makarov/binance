@@ -12,7 +12,6 @@ import (
 type Client struct {
 	Bkey       string // Binance Key
 	Bsecretkey string // Binance Secret Key
-	Timestamp  int64  // time
 	RecvWindow int64  // max delay time
 	Balance    FuturesBalances
 }
@@ -107,11 +106,11 @@ func (data *Client) MarkPrice(o *Order) error {
 	body := &url.Values{
 		"symbol": {o.Symbol},
 	}
-	responce, err := data.get(SymbolPrice, body)
-	if err != nil || responce.StatusCode() != fasthttp.StatusOK {
+	response, err := data.get(SymbolPrice, body)
+	if err != nil || response.StatusCode() != fasthttp.StatusOK {
 		return err
 	}
-	v, err := fastjson.ParseBytes(responce.Body())
+	v, err := fastjson.ParseBytes(response.Body())
 	if err != nil {
 		return err
 	}

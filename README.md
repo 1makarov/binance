@@ -1,9 +1,8 @@
 ```go
 func Bot() {
     client := &BinanceClient{
-        Bkey:       setting.CFG.BKey,
-        Bsecretkey: setting.CFG.BSecretKey,
-        Timestamp:  5000,
+        Bkey:       CFG.Bkey,
+        Bsecretkey: CFG.BsecretKey,
     }
 
     order := &Order{
