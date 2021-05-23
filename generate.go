@@ -29,6 +29,8 @@ const (
 	SideBuy    = "BUY"
 	SideSell   = "SELL"
 	TypeMarket = "MARKET"
+
+	markPriceSingle = "@markPrice@1s"
 )
 
 type RequestSuccess struct {
@@ -135,17 +137,21 @@ func (data *Client) ChangeMarginType(o *Order) error {
 		"symbol":     {o.Symbol},
 		"marginType": {o.Setting.MarginType},
 	}
+
 	response, err := data.post(ChangeMarginType, body)
 	if err != nil {
 		return err
 	}
+
 	var r ChangeMargin
 	if err = json.Unmarshal(response.Body(), &r); err != nil {
 		return err
 	}
+
 	if !(r.Code == fasthttp.StatusOK || r.Code == -4046) {
 		return fmt.Errorf("error change margin type %d, %s\n", r.Code, response.Body())
 	}
+
 	return nil
 }
 
@@ -155,18 +161,25 @@ func (data *Client) ChangeLeverage(o *Order) error {
 		"symbol":   {o.Symbol},
 		"leverage": {strconv.FormatUint(o.Setting.Leverage, 10)},
 	}
+
 	response, err := data.post(ChangeLeverage, body)
 	if err != nil || response.StatusCode() != fasthttp.StatusOK {
 		return err
 	}
+
 	return nil
 }
 
 func (data *Client) AccountInfo() (*fasthttp.Response, error) {
 	response, err := data.get(AccountInfo, &url.Values{})
-	if err != nil || response.StatusCode() != fasthttp.StatusOK {
-		return nil, err
+
+	if err != nil {
+		return nil, fmt.Errorf("account info return error: %s", err.Error())
 	}
+	if response.StatusCode() != fasthttp.StatusOK {
+		return nil, fmt.Errorf("account info return status: %d", response.StatusCode())
+	}
+
 	return response, nil
 }
 
